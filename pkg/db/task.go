@@ -47,6 +47,9 @@ func Tasks(limit int) ([]*Task, error) {
 
 		tasks = append(tasks, &task)
 	}
+	if err = row.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка  : %w", err)
+	}
 
 	return tasks, nil
 }

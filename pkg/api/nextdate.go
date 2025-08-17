@@ -97,6 +97,9 @@ func nextDateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte(nextDate))
+	_, err = w.Write([]byte(nextDate))
+	if err != nil {
+		http.Error(w, "Ошибка записи данных", http.StatusInternalServerError)
+	}
 
 }

@@ -23,7 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_date ON scheduler(date);
 `
 
 // Init подключается к базе данных
-func Init(dbFile string) error {
+func Init(dbFile string) (func(), error) {
 
 	// проверяем существование файла
 	_, err := os.Stat(dbFile)
@@ -35,22 +35,19 @@ func Init(dbFile string) error {
 	// подключаем БД
 	db, err = sql.Open("sqlite", dbFile)
 	if err != nil {
-		return fmt.Errorf("ошибка подключения БД: %w", err)
+		return nil, fmt.Errorf("ошибка подключения БД: %w", err)
 	}
-
-	// err = db.Ping()
-	// if err != nil {
-	// 	 log.Fatal(err)
-	// }
 
 	// создаем таблицу и индекс если install равен true
 	if install {
 
 		_, err = db.Exec(schema)
 		if err != nil {
-			return fmt.Errorf("ошибка создания схемы БД: %w", err)
+			return nil, fmt.Errorf("ошибка создания схемы БД: %w", err)
 		}
 	}
 
-	return nil
+	return func() {
+		db.Close()
+	}, nil
 }
